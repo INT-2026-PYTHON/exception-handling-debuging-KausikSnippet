@@ -130,10 +130,82 @@ Explanation:
 - Record at index 3 ("not a dict") is a plain
   string, so record["name"] raises TypeError.
 - Records at indices 0 and 4 succeed, so the
-  `else` block runs and they are appended to
+  `else` block runs and they are appendedto
   clean_records.
 - The strict version re-raises a RuntimeError
-  summarising the total number of failures.
+  summarising the total number of failures. 
 =================================================
 
 """
+
+def process_records(records):
+    clean_records = []
+    error_log = []
+
+    for i, record in enumerate(records):
+        try:
+            name = record["name"]
+            age = int(record["age"])
+            score = float(record["score"])
+
+        except (KeyError, TypeError) as e:
+            error_log.append(
+                (i, type(e).__name__, str(e))
+            )
+
+        except ValueError as e:
+            error_log.append(
+                (i, type(e).__name__, str(e))
+            )
+
+        else:
+            clean_records.append({
+                "name": name,
+                "age": age,
+                "score": score
+            })
+
+    return clean_records, error_log
+
+
+def process_strict(records):
+    try:
+        clean_records, error_log = process_records(records)
+
+        if error_log:
+            raise RuntimeError(
+                f"{len(error_log)} record(s) failed to process"
+            )
+
+        return clean_records
+
+    except RuntimeError:
+        raise
+
+
+# Input
+records = [
+    {"name": "Alice", "age": "25", "score": "88.5"},
+    {"name": "Bob", "age": "abc", "score": "70"},
+    {"name": "Carol", "age": "30"},
+    "not a dict",
+    {"name": "Dan", "age": "40", "score": "55.5"}
+]
+
+# Call first function
+clean_records, error_log = process_records(records)
+
+print("Clean Records:")
+print(clean_records)
+
+print("\nError Log:")
+print(error_log)
+
+# Call strict function
+try:
+    process_strict(records)
+
+except RuntimeError as e:
+    print("\nStrict mode raised:")
+    print(type(e).__name__ + ":", e)
+    

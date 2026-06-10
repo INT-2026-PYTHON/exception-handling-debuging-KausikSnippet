@@ -124,3 +124,43 @@ Explanation:
 =================================================
 
 """
+
+def read_numbers(path):
+    total = 0
+    lines_read = 0
+
+    try:
+        with open(path, "r") as f:
+            for line in f:
+                number = float(line.strip())
+                total += number
+                lines_read += 1
+
+    except FileNotFoundError:
+        return ("error", "File not found: " + path, 0)
+
+    except PermissionError:
+        return ("error", "Cannot read file", 0)
+
+    except ValueError:
+        return ("error", "Invalid number on a line", lines_read)
+
+    except Exception as e:
+        return ("error", str(e), lines_read)
+
+    else:
+        return ("ok", total, lines_read)
+
+    finally:
+        print("Done reading")
+
+
+# Take input from user
+filename = input("Enter file name: ")
+
+# Call the function
+result = read_numbers(filename)
+
+# Print result
+print(result)
+
